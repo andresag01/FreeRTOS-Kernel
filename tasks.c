@@ -862,10 +862,17 @@ UBaseType_t x;
 	#if( portSTACK_GROWTH < 0 )
 	{
 		pxTopOfStack = &( pxNewTCB->pxStack[ ulStackDepth - ( uint32_t ) 1 ] );
-		pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); /*lint !e923 !e9033 !e9078 MISRA exception.  Avoiding casts between pointers and integers is not practical.  Size differences accounted for using portPOINTER_SIZE_TYPE type.  Checked by assert(). */
+
+		/*
+         * Change this stack calculation because the bitwise-and does not work
+         * in BeyondRISC.
+         */
+		//pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); /*lint !e923 !e9033 !e9078 MISRA exception.  Avoiding casts between pointers and integers is not practical.  Size differences accounted for using portPOINTER_SIZE_TYPE type.  Checked by assert(). */
+		pxTopOfStack = configALIGN_POINTER( pxTopOfStack, portBYTE_ALIGNMENT_MASK );
 
 		/* Check the alignment of the calculated top of stack is correct. */
-		configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
+		//configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
+        configASSERT( configIS_POINTER_ALIGNED( pxTopOfStack, portBYTE_ALIGNMENT_MASK ) );
 
 		#if( configRECORD_STACK_HIGH_ADDRESS == 1 )
 		{

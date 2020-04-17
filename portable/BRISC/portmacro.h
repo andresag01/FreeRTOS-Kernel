@@ -76,6 +76,13 @@ typedef unsigned long UBaseType_t;
 #define portBYTE_ALIGNMENT			( 4 )
 #define portNOP()					__asm volatile( "rcopy r0, r0" )
 
+/* Other definitions */
+#define configALIGN_POINTER( p, mask )		alignPointer( p, mask )
+#define configIS_POINTER_ALIGNED( p, mask )	isPointerAligned( p, mask )
+
+extern int isPointerAligned(void *p, uint32_t mask);
+extern void *alignPointer(void *p, uint32_t mask);
+
 /*-----------------------------------------------------------*/
 
 /* Scheduler utilities. */
