@@ -92,7 +92,7 @@ static void vPortSetupTimerInterrupt(uint32_t delay)
  * Scheduling
  */
 
-#define TIMER_INTERRUPT_INTERVAL 10000	/* Count 10000 instructions */
+#define TIMER_INTERRUPT_INTERVAL 1000	/* Count 10000 instructions */
 
 __attribute__((naked)) StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack,
 														   TaskFunction_t pxCode,
@@ -105,7 +105,11 @@ __attribute__((naked)) StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfS
 		/* The first word in the stack is used by the callee */
 		"ldawfi r0, r0, 4	\n"
 
-		/* The following 10 words are used for r0-r9; skip over those */
+        /*
+         * The follwoing 10 words are used for r0-r9. r0 contains a pointer
+         * to the task arguments; skip over the other 9 words.
+         */
+        "stwfi r2, r0, 0    \n"
 		"ldawfi r0, r0, 40	\n"
 
 		/* Store pc */
@@ -161,6 +165,10 @@ __attribute__((naked)) void prvTaskSwitchContext( void )
 		"ldc r1, 0					\n"
 		"restoreregs r1, r0			\n"
 
+        /* Set NORMAL bit in register mode */
+        "ldc r0, 1                  \n"
+        "setmode r0, r1             \n"
+
 		/* Finish! */
 		"extwp						\n"
 		"ret						\n"
@@ -180,6 +188,10 @@ __attribute__((naked)) void prvStartFirstTask( void )
 		/* Restore the registers */
 		"ldc r1, 0					\n"
 		"restoreregs r1, r0			\n"
+
+        /* Set NORMAL bit in register mode */
+        "ldc r0, 1                  \n"
+        "setmode r0, r1             \n"
 
 		/* Finish! */
 		"ret						\n"
