@@ -35,14 +35,14 @@ void vPortExitCritical( void )
 void disableInterrupts( void )
 {
 	volatile InterruptConfig_t *icfg =
-		(InterruptConfig_t *)io[INTERRUPT_REASON_TMR0];
+		(InterruptConfig_t *)io[INTERRUPT_REASON_ICFG];
 	icfg->global = 0;
 }
 
 void enableInterrupts( void )
 {
 	volatile InterruptConfig_t *icfg =
-	    (InterruptConfig_t *)io[INTERRUPT_REASON_TMR0];
+	    (InterruptConfig_t *)io[INTERRUPT_REASON_ICFG];
 	icfg->global = 1;
 }
 
