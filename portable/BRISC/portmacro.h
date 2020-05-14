@@ -89,8 +89,16 @@ extern void *alignPointer(void *p, uint32_t mask);
 extern void vPortYield( void );
 #define portYIELD() vPortYield()
 
-extern void vTaskSwitchContext( void );
-#define portYIELD_FROM_ISR() vTaskSwitchContext()
+#define portYIELD_FROM_ISR()					\
+	do											\
+	{											\
+		uint32_t mode = getProcessorMode();		\
+		if (!IS_EXCEPTION_MODE_BIT_SET(mode))	\
+		{										\
+			prvTaskSwitchContext();				\
+		}										\
+	}											\
+	while (0)
 
 /*-----------------------------------------------------------*/
 
